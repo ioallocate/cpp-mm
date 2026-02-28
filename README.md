@@ -1,4 +1,4 @@
-# memory_manager
+# Memory Manager
 
 This Project is a self contained Windows memory manager written in C++. It reads and writes memory in an external process using raw syscall stubs instead of going through ntdll, which means it works even when ntdll is hooked.
 

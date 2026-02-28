@@ -10,8 +10,8 @@ No external dependencies, no bloated wrapper classes, just a header and a source
 
 | File | What it does |
 |---|---|
-| `memory_manager.hpp` | Class declaration + templated read/write |
-| `memory_manager.cpp` | Syscall stubs, process helpers, string reading |
+| `memory.hpp` | Class declaration + templated read/write |
+| `memory.cpp` | Syscall stubs, process helpers, string reading |
 
 ---
 

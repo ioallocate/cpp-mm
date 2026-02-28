@@ -51,7 +51,7 @@ mm::g_mm->write<bool>(base + offset, value);
 ### 5. Get a module base address
 
 ```cpp
-std::uintptr_t base =mm::g_mm->get_module_base("client.exe");
+std::uintptr_t base mm::g_mm->get_module_base("client.exe");
 ```
 
 ### 6. Read a string

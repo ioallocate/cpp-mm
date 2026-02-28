@@ -37,8 +37,9 @@ if (!mem.open("client.exe"))
 
 ```cpp
 // read any type you want
-float health = mem.read<float>(offset);
-int ammo     = mem.read<int>(base + offset);
+float <name> = mem.read<float>(offset);
+int <name> = mem.read<int>(base + offset);
+bool <name> = mem.read<bool>(base + offset);
 ```
 
 ### 4. Write memory
@@ -46,6 +47,7 @@ int ammo     = mem.read<int>(base + offset);
 ```cpp
 mem.write<float>(offset, value);
 mem.write<int>(base + offset, value);
+mem.write<bool>(base + offset, value);
 ```
 
 ### 5. Get a module base address
@@ -68,8 +70,8 @@ std::string name = mem.read_string(address);
 Instead of calling `ReadProcessMemory` / `WriteProcessMemory`  this manager builds a assembly stubs at runtime and calls the NT kernel directly.
 
 ```
-mov r10, rcx     ; required for syscalls on x64
-mov eax, 0x3F   ; number for NtReadVirtualMemory
+mov r10, rcx; required for syscalls on x64
+mov eax, 0x3F; number for NtReadVirtualMemory
 syscall
 ret
 ```

@@ -78,7 +78,7 @@ ret
 
 The stubs are allocated as executable memory with `VirtualAlloc` and cast to function pointers.
 
-> **Note:** The syscall numbers (`0x3F` for read, `0x3A` for write) are valid for **Windows 10 / Windows 11** only if you use any other version you have update them
+> **Note:** The syscall numbers (`0x3F` read, `0x3A` write) are for **Win 10 / Win 11** only if you use any other version you have update them
 
 ---
 

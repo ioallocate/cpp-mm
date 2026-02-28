@@ -4,47 +4,72 @@
 #include <Psapi.h>
 #include <string>
 #include <cstdint>
+#include <array>
+#include <memory>
+#include <format>
 
 using nt_read_fn  = NTSTATUS(WINAPI*)(HANDLE, PVOID, PVOID, ULONG, PULONG);
 using nt_write_fn = NTSTATUS(WINAPI*)(HANDLE, PVOID, PVOID, ULONG, PULONG);
 
-nt_read_fn  build_read_syscall();
-nt_write_fn build_write_syscall();
+namespace mm
+	{
 
-uintptr_t find_process_id(std::string_view process_name);
+	namespace internal
+		{
 
-class memory_manager
-{
-public:
-    HANDLE proc_handle = nullptr;
+        nt_read_fn  build_read_syscall ( );
+        nt_write_fn build_write_syscall ( );
 
-    memory_manager();
-    ~memory_manager();
+        uintptr_t find_process_id ( std::string_view process_name );
 
-    bool open(std::string_view process_name);
-    void close();
+        class memory_manager
+            {
+            public:
+                HANDLE proc_handle = nullptr;
 
-    uintptr_t get_module_base(std::string_view module_name) const;
+                memory_manager ( );
+                ~memory_manager ( );
 
-    template<typename T>
-    T read(uintptr_t address) const
-    {
-        T val{};
-        m_read(proc_handle, reinterpret_cast<PVOID>(address), &val, sizeof(T), nullptr);
-        return val;
-    }
+                //helper fn
+                auto get_handle ( ) -> HANDLE;
 
-    template<typename T>
-    void write(uintptr_t address, T value) const
-    {
-        m_write(proc_handle, reinterpret_cast<PVOID>(address), &value, sizeof(T), nullptr);
-    }
+                auto open ( std::string_view process_name ) -> bool;
+                auto close ( ) -> void;
 
-    std::string read_string(uintptr_t address) const;
+                auto get_module_base ( std::string_view module_name ) const -> std::uintptr_t;
 
-private:
-    nt_read_fn  m_read  = nullptr;
-    nt_write_fn m_write = nullptr;
+                template<typename T>
+                auto read ( std::uintptr_t address ) const -> T
+                    {
+                    return [ & ] ( ) -> T
+                        {
+                        T val {};
+                        this->m_read ( this->proc_handle, reinterpret_cast< PVOID >( address ), &val, sizeof ( T ), nullptr );
+                        return val;
+                        }( );
+                    }
 
-    std::string read_raw_string(uintptr_t address) const;
-};
+                template<typename T>
+                auto write ( std::uintptr_t address, T value ) const -> void
+                    {
+                    return [ & ] ( )->T
+                        {
+                        this->m_write ( this->proc_handle, reinterpret_cast< PVOID >( address ), &value, sizeof ( T ), nullptr );
+                        }( );
+                    
+                    }
+
+                auto read_string ( std::uintptr_t address ) const -> std::string;
+
+            private:
+                nt_read_fn  m_read = nullptr;
+                nt_write_fn m_write = nullptr;
+
+                auto read_raw_string ( std::uintptr_t address ) const -> std::string;
+            };
+
+		}
+
+    extern std::shared_ptr<internal::memory_manager> g_mm;
+
+	}

@@ -22,11 +22,9 @@ Just copy `memory.hpp` and `memory.cpp` into your project and include the header
 ### 2. Open a process
 
 ```cpp
-#include "memory_manager.hpp"
+#include <memory.hpp>
 
-memory_manager mem;
-
-if (!mem.open("client.exe"))
+if (!mm::g_mm->open("client.exe"))
 {
     // returns if proccess isnt avalible or couldnt get a handle
     return 1;
@@ -37,30 +35,30 @@ if (!mem.open("client.exe"))
 
 ```cpp
 // read any type you want
-float <name> = mem.read<float>(offset);
-int <name> = mem.read<int>(base + offset);
-bool <name> = mem.read<bool>(base + offset);
+float <name> = mm::g_mm->read<float>(offset);
+int <name> = mm::g_mm->read<int>(base + offset);
+bool <name> = mm::g_mm->read<bool>(base + offset);
 ```
 
 ### 4. Write memory
 
 ```cpp
-mem.write<float>(offset, value);
-mem.write<int>(base + offset, value);
-mem.write<bool>(base + offset, value);
+mm::g_mm->write<float>(offset, value);
+mm::g_mm->write<int>(base + offset, value);
+mm::g_mm->write<bool>(base + offset, value);
 ```
 
 ### 5. Get a module base address
 
 ```cpp
-uintptr_t base = mem.get_module_base("client.exe");
+std::uintptr_t base =mm::g_mm->get_module_base("client.exe");
 ```
 
 ### 6. Read a string
 
 ```cpp
 // handles SSO and heap-allocated strings
-std::string name = mem.read_string(address);
+std::string name = mm::g_mm->read_string(address);
 ```
 
 ---
@@ -85,13 +83,12 @@ The stubs are allocated as executable memory with `VirtualAlloc` and cast to fun
 ## Requirements
 
 - Windows 10/11 (x64)
-- C++ 17
+- C++ 23 (min)
 - Link against `Psapi.lib`
 
 ---
 
 ## Notes
 
-- The process handle is cleaned up automatically when `memory_manager` goes out.
 - `read_string` handles the SSO layout used by MSVC's `std::string`  strings under 16 characters are stored inline longer ones store a pointer to heap memory at offset `0x0`.
 - `find_process_id` is exposed as a free function if you need the PID separately.
